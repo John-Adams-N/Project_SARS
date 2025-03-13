@@ -1,47 +1,44 @@
-from pathlib import Path
-import pandas as pd
 from Bio import SeqIO
+import pandas as pd
 
-# Define project root directory (parent of "Scripts")
-BASE_DIR = Path(__file__).resolve().parent.parent  
-
-# Define the data directory
-DATA_DIR = BASE_DIR / "data"
-
-# File paths
+# File paths (adjusted to absolute paths)
 fasta_files = {
-    "Alpha": DATA_DIR / "Former VOC Alpha.fasta",
-    "Omicron": DATA_DIR / "Former VOC Omicron.fasta"
+    "Alpha": "C:/Users/Admin.DESKTOP-8TK90VT/Project_SARS/Data/Former VOC Alpha.fasta",
+    "Omicron": "C:/Users/Admin.DESKTOP-8TK90VT/Project_SARS/Data/Former VOC Omicron.fasta"
 }
 metadata_files = {
-    "Alpha": DATA_DIR / "Alpha patient metadata.tsv",
-    "Omicron": DATA_DIR / "Omicron patient metadata.tsv"
+    "Alpha": "C:/Users/Admin.DESKTOP-8TK90VT/Project_SARS/Data/Alpha patient metadata.tsv",
+    "Omicron": "C:/Users/Admin.DESKTOP-8TK90VT/Project_SARS/Data/Omicron patient metadata.tsv"
 }
 
 # Read metadata files
 def load_metadata(file_path):
-    if not file_path.exists():
-        print(f"❌ ERROR: File not found - {file_path}")
+    try:
+        return pd.read_csv(file_path, sep="\t")
+    except FileNotFoundError:
+        print(f"\u274C ERROR: File not found - {file_path}")
         return None
-    return pd.read_csv(file_path, sep="\t")
 
-# Read FASTA sequences
+# Read FASTA sequences and store in dictionary
 def load_fasta(file_path):
     sequences = {}
-    for record in SeqIO.parse(file_path, "fasta"):
-        sequences[record.id] = str(record.seq)
+    try:
+        for record in SeqIO.parse(file_path, "fasta"):
+            sequences[record.id] = str(record.seq)
+    except FileNotFoundError:
+        print(f"\u274C ERROR: File not found - {file_path}")
     return sequences
 
-# Process variants
+# Process each variant
 merged_data = []
 for variant, fasta_file in fasta_files.items():
-    metadata_path = metadata_files[variant]
-
-    metadata = load_metadata(metadata_path)
+    metadata = load_metadata(metadata_files[variant])
     if metadata is None:
-        continue  # Skip if metadata file is missing
-
+        continue
     sequences = load_fasta(fasta_file)
+    
+    if not sequences:
+        continue
     
     # Merge metadata with sequences
     metadata["Sequence"] = metadata["Accession ID"].map(sequences)
@@ -51,11 +48,10 @@ for variant, fasta_file in fasta_files.items():
     metadata["Variant"] = variant  # Add variant column
     merged_data.append(metadata)
 
-# Combine variants
+# Combine both variants
 if merged_data:
     final_df = pd.concat(merged_data)
-    output_file = DATA_DIR / "merged_sarscov2_data.csv"
-    final_df.to_csv(output_file, index=False)
-    print(f"✅ Merging complete! Data saved as '{output_file}'")
+    final_df.to_csv("C:/Users/Admin.DESKTOP-8TK90VT/Project_SARS/merged_sarscov2_data.csv", index=False)
+    print("\u2705 Merging complete! Data saved as 'merged_sarscov2_data.csv'.")
 else:
-    print("⚠️ No data was merged. Check file paths.")
+    print("\u274C No matching data found. Check metadata and FASTA files.")
