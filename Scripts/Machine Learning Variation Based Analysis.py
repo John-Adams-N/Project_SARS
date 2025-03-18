@@ -1,34 +1,61 @@
+import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from matplotlib_venn import venn2
 
-# Load cleaned metadata
-file_path = "c:/Users/Cyberplus/Project_SARS/data/merged_sarscov2_metadata.csv"
-df = pd.read_csv(file_path, parse_dates=["Collection date"])
+# Get the current working directory of the script
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
-# 📊 Variant Distribution
-plt.figure(figsize=(8,5))
-sns.countplot(data=df, x="Variant", palette="coolwarm")
-plt.title("Variant Distribution")
-plt.xlabel("SARS-CoV-2 Variant")
-plt.ylabel("Count")
-plt.xticks(rotation=45)
-plt.show()
+# Define file paths dynamically
+data_dir = os.path.join(script_dir, "..", "data")
 
-# 📅 Collection Date Trends
-plt.figure(figsize=(10,5))
-df["Collection date"].hist(bins=20, color="skyblue", edgecolor="black")
-plt.title("Distribution of Collection Dates")
-plt.xlabel("Collection Date")
-plt.ylabel("Frequency")
-plt.xticks(rotation=45)
-plt.show()
+# CSV file for merged SARS-CoV-2 metadata
+metadata_file = os.path.join(data_dir, "merged_sarscov2_metadata.csv")
 
-# 🧬 Mutation Patterns
+# Ensure the file exists before loading
+if not os.path.exists(metadata_file):
+    raise FileNotFoundError(f"❌ Metadata file not found: {metadata_file}")
+
+# Load the metadata
+df = pd.read_csv(metadata_file, parse_dates=["Collection date"])
+
+# Print a summary to confirm successful loading
+print(f"✅ Loaded metadata file: {metadata_file}")
+print(df.head())
+
+# Filter Alpha and Omicron variants
+alpha_df = df[df["Variant"] == "Alpha"]
+omicron_df = df[df["Variant"] == "Omicron"]
+
+# Extract and count mutations for each variant
+alpha_mutations = alpha_df["AA Substitutions"].str.split(",").explode().value_counts()
+omicron_mutations = omicron_df["AA Substitutions"].str.split(",").explode().value_counts()
+
+# Identify shared and unique mutations
+alpha_set = set(alpha_mutations.index)
+omicron_set = set(omicron_mutations.index)
+shared_mutations = alpha_set & omicron_set
+alpha_unique = alpha_set - omicron_set
+omicron_unique = omicron_set - alpha_set
+
+# 🏆 Top 20 Mutations in Alpha and Omicron
 plt.figure(figsize=(12,5))
-df["AA Substitutions"].str.split(",").explode().value_counts().head(20).plot(kind="bar", color="coral")
-plt.title("Top 20 Most Frequent Mutations")
+sns.barplot(x=alpha_mutations.head(20).index, y=alpha_mutations.head(20).values, color="blue", label="Alpha")
+sns.barplot(x=omicron_mutations.head(20).index, y=omicron_mutations.head(20).values, color="red", label="Omicron")
+plt.xticks(rotation=90)
+plt.title("Top 20 Frequent Mutations in Alpha vs. Omicron")
 plt.xlabel("Mutation")
 plt.ylabel("Count")
-plt.xticks(rotation=90)
+plt.legend()
 plt.show()
+
+# 🔵 Venn Diagram: Unique vs. Shared Mutations
+plt.figure(figsize=(6,6))
+venn2([alpha_set, omicron_set], set_labels=("Alpha", "Omicron"))
+plt.title("Mutation Overlap Between Alpha and Omicron")
+plt.show()
+
+# Save results
+alpha_mutations.to_csv("alpha_mutation_counts.csv")
+omicron_mutations.to_csv("omicron_mutation_counts.csv")
