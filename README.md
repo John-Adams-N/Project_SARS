@@ -3,12 +3,12 @@
 ## Table of Contents 🚀
 
 - [Introduction](#introduction)
-- [Project Structure](#📜 project structure)
-- [Installation](#⚙️ installation)
-- [Usage](#🚀 usage)
-- [Contributing](#🤝 contributing)
-- [License](#📜 license)
-- [Contact](#📧 contact)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
 ---
 
