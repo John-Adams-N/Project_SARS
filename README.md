@@ -3,12 +3,12 @@
 ## Table of Contents 🚀
 
 - [Introduction](#introduction)
-- [Project Structure] (#📜-project-structure)
-- [Installation] (#⚙️-installation)
-- [Usage] (#🚀-usage)
-- [Contributing] (#🤝-contributing)
-- [License] (#📜-license)
-- [Contact] (#📧-contact)
+- [Project Structure](#📜 project structure)
+- [Installation](#⚙️ installation)
+- [Usage](#🚀 usage)
+- [Contributing](#🤝 contributing)
+- [License](#📜 license)
+- [Contact](#📧 contact)
 
 ---
 
@@ -105,12 +105,12 @@ To run Nextclade for mutation annotation:bash
 
 We welcome contributions to this project! To contribute:
 
-Fork the repository
-Create a new branch (git checkout -b feature-branch)
-Commit your changes (git commit -m 'Add some feature')
-Push to the branch (git push origin feature-branch)
-Create a new Pull Request
-Your contributions will improve mutation pattern analysis in SARS-CoV-2 genomic studies.
+- Fork the repository
+- Create a new branch (git checkout -b feature-branch)
+- Commit your changes (git commit -m 'Add some feature')
+- Push to the branch (git push origin feature-branch)
+- Create a new Pull Request
+- Your contributions will improve mutation pattern analysis in SARS-CoV-2 genomic studies.
 
 ## 📜 License
 
