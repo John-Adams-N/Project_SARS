@@ -57,5 +57,5 @@ plt.title("Mutation Overlap Between Alpha and Omicron")
 plt.show()
 
 # Save results
-alpha_mutations.to_csv("alpha_mutation_counts.csv")
-omicron_mutations.to_csv("omicron_mutation_counts.csv")
+alpha_mutations.to_csv(os.path.join(data_dir, "alpha_mutation_counts.csv"))
+omicron_mutations.to_csv(os.path.join(data_dir, "omicron_mutation_counts.csv"))
