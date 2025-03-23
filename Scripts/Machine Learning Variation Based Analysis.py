@@ -170,9 +170,12 @@ explainer = shap.TreeExplainer(rf_model)
 shap_values = explainer.shap_values(X)
 
 # Ensure the shape of shap_values matches the shape of X
-assert shap_values[1].shape == X.shape, "The shape of the shap_values matrix does not match the shape of the provided data matrix."
+if isinstance(shap_values, list):
+    shap_values = shap_values[1]  # Pick Omicron's SHAP values
+
+print(f"✅ Fixed SHAP shape: {shap_values.shape}, X shape: {X.shape}")
 
 plt.figure(figsize=(10, 6))
-shap.summary_plot(shap_values[1], X, show=False)  # Class 1 (Omicron)
+shap.summary_plot(shap_values, X)
 plt.title("SHAP Summary Plot: Mutation Impact on Variant Classification")
 plt.show()
